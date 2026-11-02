@@ -87,6 +87,7 @@
     <div class="modal-backdrop" id="discount-modal" hidden><form class="modal modal-small" id="discount-form"><div class="modal-heading"><div><span class="eyebrow">ƯU ĐÃI</span><h2>Mã giảm giá</h2></div><button type="button" class="modal-close" data-close="discount-modal" aria-label="Đóng">×</button></div><label>Phần trăm giảm<input id="discount-rate" type="number" min="0" max="100" step="1" value="0" required></label><p class="form-hint">Nhập 0 để bỏ giảm giá. Giảm giá được trừ trước thuế.</p><div class="modal-actions"><button type="button" class="button button-outline" data-close="discount-modal">Hủy</button><button class="button button-primary" type="submit">Áp dụng</button></div></form></div>
     <div class="modal-backdrop" id="receipt-modal" hidden><div class="modal receipt-modal"><div class="receipt-head"><div class="brand-mark">c.</div><button type="button" class="modal-close" data-close="receipt-modal" aria-label="Đóng">×</button></div><div id="receipt-content"></div><div class="modal-actions no-print"><button class="button button-outline" data-close="receipt-modal">Đóng</button><button class="button button-primary" id="print-receipt">In hóa đơn</button></div></div></div>
     <div class="toast" id="toast" role="status"></div>
+    <script src="./pos.js"></script>
     <script src="./app.js"></script>
   </body>
 </html>
