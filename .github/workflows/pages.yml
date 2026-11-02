@@ -1,0 +1,57 @@
+name: Deploy POS to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Emscripten
+        uses: mymindstorm/setup-emsdk@v14
+
+      - name: Build C core to WebAssembly
+        run: |
+          mkdir -p dist
+          emcc src/pos.c -O2 \
+            -s MODULARIZE=1 \
+            -s EXPORT_NAME=createPosModule \
+            -s ENVIRONMENT=web \
+            -s ALLOW_MEMORY_GROWTH=1 \
+            -s EXPORTED_FUNCTIONS='["_malloc","_free","_pos_reset","_pos_add_product","_pos_update_product","_pos_remove_product","_pos_product_count","_pos_product_id","_pos_product_name","_pos_product_sku","_pos_product_stock","_pos_product_price_cents","_pos_set_cart_quantity","_pos_cart_count","_pos_cart_product_id","_pos_cart_quantity","_pos_clear_cart","_pos_cart_subtotal_cents","_pos_cart_discount_cents","_pos_cart_tax_cents","_pos_checkout"]' \
+            -s EXPORTED_RUNTIME_METHODS='["stringToNewUTF8"]' \
+            -o dist/pos.js
+          cp web/index.html web/styles.css web/app.js dist/
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
